@@ -1,0 +1,80 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'ruby-progressbar'
+
+# Monkeypatch string for colorization
+class String
+  # colorization
+  def colorize(color_code)
+    "\e[#{color_code}m#{self}\e[0m"
+  end
+
+  def red
+    colorize(31)
+  end
+
+  def green
+    colorize(32)
+  end
+
+  def yellow
+    colorize(33)
+  end
+
+  def blue
+    colorize(34)
+  end
+
+  def pink
+    colorize(35)
+  end
+
+  def light_blue
+    colorize(36)
+  end
+end
+
+progressbar = ProgressBar.create(:starting_at => 0, :total => nil)
+progress_thread = Thread.new { loop { sleep 1; progressbar.increment } }
+
+specresults = ""
+exit_status = -1
+specresults = %x[bundle exec rspec --format j #{ARGV.join(" ")}]
+exit_status = $?.exitstatus
+
+Thread.kill(progress_thread)
+
+unless [0,1].include? exit_status
+  puts "Could not run specs: #{specresults}"
+  exit 1
+end
+specresults = specresults[0..(specresults.rindex("\}"))] # cut eventual stdout output after json
+
+jsonresults = JSON.parse(specresults, { symbolize_names: true } )
+failed_examples = jsonresults[:examples].select { |e| e[:status] == "failed" }
+
+failed_paths = []
+failed_examples.each do |fe|
+  failed_paths << "#{fe[:file_path].yellow}:#{fe[:line_number].to_s.red}"
+  puts "\n\n[#{fe[:file_path].yellow}:#{fe[:line_number].to_s.red}] #{fe[:full_description]}\n\n"
+  puts "#{"Message".yellow}: #{fe[:exception][:message]}\n"
+  puts "#{"Backtrace".yellow}: #{JSON.pretty_generate(fe[:exception][:backtrace])}"
+end
+
+failed_paths.each do |fp|
+  puts fp
+end
+
+example_count = jsonresults[:summary][:example_count] || 0
+pending_count = jsonresults[:summary][:pending_count] || 0
+failure_count = jsonresults[:summary][:failure_count] || 0
+success_count = example_count - pending_count - failure_count
+
+puts "Success: #{success_count.to_s.green} Pending: #{pending_count.to_s.yellow} Failed: #{failure_count.to_s.red}"
+
+# "maybe light up once tests are running?"
+# "BlinkSpecs: Exit Status is $?.exitstatus"
+# "YELLOW: #{pending_count}"
+# "RED: #{failure_count}"
+# "keep light with result for a while and then do a colored output in case not present"
