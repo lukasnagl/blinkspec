@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'json'
-require 'ruby-progressbar'
+require 'fileutils'
 
 # Monkeypatch string for colorization
 class String
@@ -35,37 +35,32 @@ class String
   end
 end
 
-progressbar = ProgressBar.create(:starting_at => 0, :total => nil)
-progress_thread = Thread.new { loop { sleep 1; progressbar.increment } }
+spec_output_file = "blinkspec.json"
 
-specresults = ""
-exit_status = -1
-specresults = %x[bundle exec rspec --format j #{ARGV.join(" ")}]
-exit_status = $?.exitstatus
+# Execute rspec
+begin
+  system("bundle exec rspec #{ARGV.join(" ")} --format progress --format j --out #{spec_output_file}")
+rescue SystemExit, Interrupt
+  FileUtils.rm(spec_output_file)
+  exit 1
+end
 
-Thread.kill(progress_thread)
-
-unless [0,1].include? exit_status
+unless [0,1].include? $?.exitstatus
   puts "Could not run specs: #{specresults}"
   exit 1
 end
+
+# Read execution resuls
+file = File.open(spec_output_file, "r")
+specresults = file.read
+file.close
+FileUtils.rm(spec_output_file)
+
+# Fetch Examples
 specresults = specresults[0..(specresults.rindex("\}"))] # cut eventual stdout output after json
-
 jsonresults = JSON.parse(specresults, { symbolize_names: true } )
-failed_examples = jsonresults[:examples].select { |e| e[:status] == "failed" }
 
-failed_paths = []
-failed_examples.each do |fe|
-  failed_paths << "#{fe[:file_path].yellow}:#{fe[:line_number].to_s.red}"
-  puts "\n\n[#{fe[:file_path].yellow}:#{fe[:line_number].to_s.red}] #{fe[:full_description]}\n\n"
-  puts "#{"Message".yellow}: #{fe[:exception][:message]}\n"
-  puts "#{"Backtrace".yellow}: #{JSON.pretty_generate(fe[:exception][:backtrace])}"
-end
-
-failed_paths.each do |fp|
-  puts fp
-end
-
+# Get summary
 example_count = jsonresults[:summary][:example_count] || 0
 pending_count = jsonresults[:summary][:pending_count] || 0
 failure_count = jsonresults[:summary][:failure_count] || 0

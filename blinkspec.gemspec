@@ -9,6 +9,5 @@ Gem::Specification.new do |s|
   s.files       = ["bin/blinkspec"]
   s.homepage    = "http://none.yet"
   s.license     = "MIT"
-  s.add_runtime_dependency "ruby-progressbar", "~> 1.7"
   s.executables << "blinkspec"
 end
