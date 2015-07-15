@@ -1,11 +1,9 @@
 #!/usr/bin/env ruby
 
-require 'json'
-require 'fileutils'
+require 'blinkspec'
 
-# Monkeypatch string for colorization
+# Allow String to be easily colorized
 class String
-  # colorization
   def colorize(color_code)
     "\e[#{color_code}m#{self}\e[0m"
   end
@@ -21,55 +19,16 @@ class String
   def yellow
     colorize(33)
   end
-
-  def blue
-    colorize(34)
-  end
-
-  def pink
-    colorize(35)
-  end
-
-  def light_blue
-    colorize(36)
-  end
 end
 
-spec_output_file = "blinkspec.json"
+blinkspec = BlinkSpec::BlinkSpecRunner.new
+success, pending, failed = blinkspec.run_specs(ARGV.join(' '))
+puts "Success: #{success.to_s.green} Pending: #{pending.to_s.yellow} Failed: #{failed.to_s.red}"
 
-# Execute rspec
-begin
-  system("bundle exec rspec #{ARGV.join(" ")} --format progress --format j --out #{spec_output_file}")
-rescue SystemExit, Interrupt
-  FileUtils.rm(spec_output_file)
-  exit 1
+if failed > 0
+  system("blink1-tool --glimmer --rgb=#{BlinkSpec::BlinkColor.fail}")
+elsif pending > 0
+  system("blink1-tool --glimmer --rgb=#{BlinkSpec::BlinkColor.pending}")
+else
+  system("blink1-tool --glimmer --rgb=#{BlinkSpec::BlinkColor.success}")
 end
-
-unless [0,1].include? $?.exitstatus
-  puts "Could not run specs: #{specresults}"
-  exit 1
-end
-
-# Read execution resuls
-file = File.open(spec_output_file, "r")
-specresults = file.read
-file.close
-FileUtils.rm(spec_output_file)
-
-# Fetch Examples
-specresults = specresults[0..(specresults.rindex("\}"))] # cut eventual stdout output after json
-jsonresults = JSON.parse(specresults, { symbolize_names: true } )
-
-# Get summary
-example_count = jsonresults[:summary][:example_count] || 0
-pending_count = jsonresults[:summary][:pending_count] || 0
-failure_count = jsonresults[:summary][:failure_count] || 0
-success_count = example_count - pending_count - failure_count
-
-puts "Success: #{success_count.to_s.green} Pending: #{pending_count.to_s.yellow} Failed: #{failure_count.to_s.red}"
-
-# "maybe light up once tests are running?"
-# "BlinkSpecs: Exit Status is $?.exitstatus"
-# "YELLOW: #{pending_count}"
-# "RED: #{failure_count}"
-# "keep light with result for a while and then do a colored output in case not present"
