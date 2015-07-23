@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Run your specs with beautiful output and blink(1) signals"
   s.authors     = ["Lukas Nagl"]
   s.email       = "lukas.nagl@innovaptor.com"
-  s.homepage    = "http://none.yet"
+  s.homepage    = "https://github.com/j4zz/blinkspec"
   s.license     = "MIT"
   # Done with descriptive fields.
   s.rubyforge_project = "blinkspec"

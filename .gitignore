@@ -1,1 +1,4 @@
 blinkspec-*.gem
+.DS_Store
+Gemfile.lock
+blinkspec.json
