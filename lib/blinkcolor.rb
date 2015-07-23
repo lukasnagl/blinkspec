@@ -2,7 +2,7 @@ module BlinkSpec
   # Wrap color definitions
   class BlinkColor
     def self.fail
-      '255,135,198'
+      '255,0,0'
     end
 
     def self.success

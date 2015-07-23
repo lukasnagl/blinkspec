@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'blinkspec'
+require 'pry'
 
 # Allow String to be easily colorized
 class String
@@ -23,6 +24,8 @@ end
 
 blinkspec = BlinkSpec::BlinkSpecRunner.new
 success, pending, failed = blinkspec.run_specs(ARGV.join(' '))
+exit 1 if success.nil?
+
 puts "Success: #{success.to_s.green} Pending: #{pending.to_s.yellow} Failed: #{failed.to_s.red}"
 
 if failed > 0
