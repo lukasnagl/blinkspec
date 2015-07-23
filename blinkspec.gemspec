@@ -16,4 +16,5 @@ Gem::Specification.new do |s|
   s.executables << "blinkspec"
   s.require_paths = ["lib"]
   s.add_development_dependency "rspec", '~> 3.0'
+  s.add_development_dependency "pry", '~> 0.10'
 end
