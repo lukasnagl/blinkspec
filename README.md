@@ -7,7 +7,7 @@
 With blinkspec, you can run your specs just like you’re used to, and your blink(1) will indicate that:
 
   * Your specs are still running.
-  * blinkspec detected an error in your specs while running.
+  * `blinkspec` detected an error in your specs while running.
   * Your specs have finished running and are either all green, have pending specs left or have failing specs left.
 
 ## Installation
