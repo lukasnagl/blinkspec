@@ -18,8 +18,10 @@ With blinkspec, you can run your specs just like you’re used to, and your blin
 
 Just replace your use of `bundle exec rspec` with `blinkspec` and you’re good to go. All regular rspec arguments are supported except for format parameters.
 
-`blinkspec spec/`
-`blinkspec spec/ --tag debug`
+```
+blinkspec spec/
+blinkspec spec/ --tag debug
+```
 
 # Contributing
 
