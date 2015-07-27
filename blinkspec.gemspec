@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = "blinkspec"
-  s.version     = "0.0.0"
-  s.date        = "2015-07-09"
+  s.version     = "0.0.1"
+  s.date        = "2015-07-27"
   s.summary     = "Run your specs with blink(1) feedback."
   s.description = "Run your specs with beautiful output and blink(1) signals"
   s.authors     = ["Lukas Nagl"]
