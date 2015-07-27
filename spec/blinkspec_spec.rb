@@ -7,6 +7,7 @@ describe BlinkSpec::BlinkSpecRunner do
     it 'should call rspec with arguments' do
       expect(runner).to receive(:blink).with(/--rgb=#{BlinkSpec::BlinkColor.running}/)
       expect(runner).to receive(:run_rspec_subprocess).with('fixtures/blinkspec_fixture_spec.rb --color')
+      expect(runner).to receive(:results)
       runner.run_specs('fixtures/blinkspec_fixture_spec.rb --color')
     end
 
