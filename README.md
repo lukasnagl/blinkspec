@@ -1,5 +1,7 @@
 # blinkspec
 
+[![Build Status](https://travis-ci.org/j4zz/blinkspec.svg)](https://travis-ci.org/j4zz/blinkspec)
+
 `blinkspec` is a ruby gem that was created to utilize the [blink(1)](http://blink1.thingm.com/) USB RGB LED by ThingM when executing long-running [rspec](http://www.relishapp.com/rspec) tests.
 
 With blinkspec, you can run your specs just like you’re used to, and your blink(1) will indicate that:
