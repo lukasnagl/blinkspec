@@ -1,4 +1,6 @@
-# blinkspec
+# [deprecated] blinkspec
+
+**Deprecation Notice**: While this tool might functionally still work, it has not been kept in maintenance. It is left here as a basis for future projects.
 
 [![Build Status](https://travis-ci.org/j4zz/blinkspec.svg)](https://travis-ci.org/j4zz/blinkspec) [![Gem Version](https://badge.fury.io/rb/blinkspec.svg)](http://badge.fury.io/rb/blinkspec)
 
